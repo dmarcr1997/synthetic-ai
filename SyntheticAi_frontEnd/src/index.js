@@ -52,10 +52,19 @@ class User{
             this.createBrainButton(types[i]);
         }
     }
+
+    static async getCurrentUser(){
+        
+        let thisUser;
+        await fetch(`${BASE_URL}/sessions`,{
+            method: 'GET'
+        }).then(response => response.json()).then(data => thisUser = data).catch(error => alert(error.message));
+        if (thisUser !== undefined) return thisUser;
+    
+    }
 }
 
 const BASE_URL = "http://localhost:3000"
-let current_user = null;
 const mainContent = document.getElementsByClassName('user_location')[0];
 
 let renderHomePage = function(){
@@ -122,6 +131,11 @@ let newUserFromJson = function(data){
  }
 
  document.addEventListener('DOMContentLoaded', (e) => { 
-    if (current_user === null) renderHomePage();
-    else current_user.homePage();
+     console.log(User.getCurrentUser());
+    if (await User.getCurrentUser() === 'null') renderHomePage();
+    
+    else {
+        current_user = User.getCurrentUser();
+        current_user.homePage();
+    }
 });
