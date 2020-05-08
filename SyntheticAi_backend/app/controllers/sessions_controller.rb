@@ -1,8 +1,9 @@
-class SessionController < ApplicationController
+class SessionsController < ApplicationController
     def create
-        user = User.find_by(email: session_params[:email])
+        # binding.pry
+        user = User.find_by(username: session_params[:username])
         if user
-            render json: UserSerializer.new(user)
+            render json: UsersSerializer.new(user)
         else
             render json: {message: 'user could not be found'}
         end
@@ -19,6 +20,6 @@ class SessionController < ApplicationController
 
     private
     def session_params
-        params.require(:user).permit(:email, :password)
+        params.require(:session).permit(:username, :email)
     end
 end

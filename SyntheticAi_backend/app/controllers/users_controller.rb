@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
     def create
         binding.pry
-        user = User.create(username: params["_json"])
+        user = User.create(user_params)
         if user.save
             render json: UsersSerializer.new(user)
         else
@@ -10,7 +10,12 @@ class UsersController < ApplicationController
     end
 
     def show
-        user = user.find(params[:id])
-        render json: UserSerializer.new(user)
+        user = User.find_by(username: params[:username])
+        render json: UsersSerializer.new(user)
+    end
+
+    private
+    def user_params
+        params.require(:user).permit(:username, :email);
     end
 end
