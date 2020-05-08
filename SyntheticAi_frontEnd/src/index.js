@@ -1,9 +1,22 @@
+class User{
+    constructor(username, email, id){
+        this.username = username;
+        this.email = email;
+        this.id = id;
+    }
+    index(){
+        fetch(`${BASE_URL}/users/${this.id}`).then(response => response.json()).then(data => this.setUpHomePage(data)).catch(error => console.log(error.messages));
+    }
+    show(brain_id){
+        fetch(`${BASE_URL}/users/${this.id}/brains/${brain_id}`).then(response => response.json()).then(data => this.setUpHomePage(data)).catch(error => console.log(error.messages));
+    }        
+}
+
 const BASE_URL = "http://localhost:3000"
 document.addEventListener('DOMContentLoaded', (e) => renderHomePage());
 const mainContent = document.getElementsByClassName('user_location')[0];
 let renderHomePage = function(){
     let box = document.createElement('div')
-    let attrs = []
     box.style.width = '100%';
     box.style.height = '100%';
     box.style.background = '#C4C4C4';
@@ -39,6 +52,10 @@ let sendInfo = function(url, values){
             'Accepts': 'application/json'
         },
         body: JSON.stringify(values)
-    }).then(response => response.json()).then(data => console.log(data)).catch((errors) => console.log(errors.messages));
+    }).then(response => response.json()).then(data => normalizeData(data)).catch((errors) => console.log(errors.messages));
+
+}
+let normalizeData = function(data){
+
 }
     
