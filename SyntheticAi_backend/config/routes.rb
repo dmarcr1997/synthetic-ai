@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  
-  resources :users, only: [:create, :show] do
+  post 'users/new', to: 'users#create'
+  resources :users, only: [ :show] do
     resources :brains, only: [:show, :create, :index, :edit]
   end
   resources :sessions, only: [:show, :create, :destroy]

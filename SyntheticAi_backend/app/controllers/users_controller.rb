@@ -1,8 +1,9 @@
 class UsersController < ApplicationController
     def create
-        user = User.create(user_params)
+        binding.pry
+        user = User.create(username: params["_json"])
         if user.save
-            render json: UserSerializer.new(user)
+            render json: UsersSerializer.new(user)
         else
             render json: {message: 'error logging in'}
         end
@@ -11,11 +12,5 @@ class UsersController < ApplicationController
     def show
         user = user.find(params[:id])
         render json: UserSerializer.new(user)
-    end
-
-    private
-
-    def user_param
-        params.require(:user).permit(:username, email, password)
     end
 end
