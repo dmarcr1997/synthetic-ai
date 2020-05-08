@@ -2,7 +2,7 @@ class UsersController < ApplicationController
     def create
         user = User.create(user_params)
         if user.save
-            session[:user_id] = user.id
+            Session.getSession[:user_id] = user.id
             render json: UsersSerializer.new(user)
         else
             render json: {message: 'error logging in'}

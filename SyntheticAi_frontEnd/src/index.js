@@ -26,15 +26,12 @@ class User{
         mainContent.appendChild(home);
         let logout = document.createElement('button');
         logout.innerHTML = 'Logout';
-        logout.addEventListener('click', () => {
-            current_user = null;
-                
-            console.log(getInfo(`${BASE_URL}/sessions/destroy`));
-            renderHomePage();
+        logout.addEventListener('click', () => {    
+            console.log(getInfo(`${BASE_URL}/sessions/destroy`, 'logout'));
         });
         mainContent.appendChild(logout);
         let about = document.createElement('button');
-        about.addEventListener('click', () => getResp(`${BASE_URL}/about`, 'Get'));
+        about.addEventListener('click', () => renderAboutPage());
         about.innerHTML = 'About';
         mainContent.appendChild(about);
     }
@@ -53,15 +50,7 @@ class User{
         }
     }
 
-    static async getCurrentUser(){
-        
-        let thisUser;
-        await fetch(`${BASE_URL}/sessions`,{
-            method: 'GET'
-        }).then(response => response.json()).then(data => thisUser = data).catch(error => alert(error.message));
-        if (thisUser !== undefined) return thisUser;
     
-    }
 }
 
 const BASE_URL = "http://localhost:3000"
@@ -76,7 +65,7 @@ let renderHomePage = function(){
     box.innerHTML = "Welcome to Synthetic Ai!!";
     mainContent.appendChild(box);
     let buttons = createHomeButtons();
-    console.log(buttons);
+    
     for(let i = 0; i < buttons.length; i++){
         mainContent.appendChild(buttons[i]);
     }
@@ -94,7 +83,7 @@ let createHomeButtons = function(){
     signup.addEventListener('click', () => sendInfo(`${BASE_URL}/users/new`, {username: signUpForm.value}));
 
     let about = document.createElement('button');
-    about.addEventListener('click', () => getResp(`${BASE_URL}/about`, 'Get'));
+    about.addEventListener('click', () => renderAboutPage());
     about.innerHTML = 'About';
     return [loginForm, login, signUpForm, signup, about];
 }
@@ -112,7 +101,7 @@ let sendInfo = function(url, values){
     } ).catch((errors) => console.log(errors.messages));
 
 }
-let getInfo = function(url){
+let getInfo = function(url, option){
     fetch(`${url}`,{
         method: `GET`,
         headers: {
@@ -120,22 +109,57 @@ let getInfo = function(url){
             'Accepts': 'application/json'
         }
     }).then(response => response.json()).then((data) =>{
-        console.log(data);
+        renderHomePage();
+        createMessageOrPage(data, option);
     } ).catch((errors) => console.log(errors.messages));
 }
-
+let createMessageOrPage = function(data, option){
+    if (option === undefined){
+        
+    }
+    else if (option === 'logout')
+    {
+        alert(data['message']);
+    }
+}
 let newUserFromJson = function(data){
     console.log(data)
     mainContent.innerHTML = '';
     current_user = new User(data['data']['attributes']['username']);
  }
 
- document.addEventListener('DOMContentLoaded', (e) => { 
-     console.log(User.getCurrentUser());
-    if (await User.getCurrentUser() === 'null') renderHomePage();
+ let setUp = function(data){
+     if (data['noCurrentUser']) renderHomePage();
+     else{
+        newUserFromJson(data);
+        }
+ }
+
+ let renderAboutPage = function(){
+    mainContent.innerHTML = '';
+    let box = document.createElement('div')
+    box.style.width = '100%';
+    box.style.height = '100%';
+    box.style.background = '#C4C4C4';
+    box.innerHTML = "About";
+    mainContent.appendChild(box);
+    let loginPageButton = document.createElement('button');
+    loginPageButton.innerText = 'Back to Landing Page'
+    loginPageButton.addEventListener('click', () => refreshRender()); 
+    mainContent.appendChild(loginPageButton);
+   
+    let par = document.createElement('p')
+    par.innerText = " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum placerat, orci nec malesuada feugiat, lorem ante ultricies dui, a elementum ante risus ultrices lectus. Nunc mattis a odio vel tempor. Proin libero nunc, condimentum ac mi at, sodales tincidunt ligula. Quisque sit amet vehicula nunc. Fusce porta pulvinar metus et eleifend. Fusce accumsan fermentum justo et egestas. Sed varius mi eget auctor sodales. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nullam ultricies elementum erat, a iaculis sapien commodo in. Nulla id volutpat massa. Suspendisse odio velit, gravida id mollis at, tincidunt ullamcorper odio. Aenean varius, lorem sit amet luctus sodales, lacus felis rhoncus tellus, nec commodo orci tellus non neque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In quam purus, vestibulum vitae fermentum eu, pulvinar non enim. Nam sapien orci, consequat vel ante ut, sodales eleifend magna. Curabitur gravida vel diam eget venenatis. Nulla facilisi. Etiam sagittis fringilla auctor. Ut a tincidunt eros. Aenean tincidunt lacus ut massa faucibus ultricies. In hac habitasse platea dictumst. Proin eu commodo mauris. Morbi blandit felis eleifend ligula pellentesque consectetur. Integer sagittis laoreet vulputate. Praesent congue egestas euismod. Etiam orci nisl, pulvinar id nisl at, congue molestie ipsum. Fusce ultrices metus massa, at pharetra nisl tempus eget. Morbi pulvinar felis elit, vel ornare lorem pretium id. Ut ac porta turpis. Nam tellus tortor, dictum eu est sed, vulputate molestie leo. Nam condimentum turpis ac massa luctus, sed laoreet dolor hendrerit. Vivamus elit ipsum, ornare malesuada dui at, convallis interdum dolor. Donec dapibus lorem hendrerit justo accumsan fringilla. Nullam pharetra vel dui sed molestie. Nam et scelerisque tellus. Fusce pulvinar ut odio at rutrum. Aenean quis turpis eu lorem rutrum fringilla at et sapien. Phasellus et molestie erat. Cras pretium mauris non gravida mattis. Integer lacinia diam eu pretium sollicitudin. Vivamus hendrerit eros eu accumsan ullamcorper. Maecenas id mauris nibh. Vivamus tristique consequat augue, placerat sodales dui facilisis vitae. Fusce neque nibh, ultrices ac ullamcorper nec, feugiat eu massa. Integer justo leo, tempor vitae commodo nec, lacinia blandit ex. Nulla ut faucibus lorem. Mauris semper et eros vel condimentum. Nulla at pretium turpis, nec finibus libero. Suspendisse eget tempor libero. Sed tincidunt orci tortor, quis lacinia erat dictum eu. Sed dignissim pellentesque turpis sit amet ullamcorper. Aenean venenatis leo vel elit sodales tincidunt. Cras neque massa, feugiat eu nibh eu, molestie semper arcu. Suspendisse ultrices nunc vel dictum vehicula. Suspendisse scelerisque nulla sed velit pellentesque efficitur. Maecenas placerat, eros quis pretium sollicitudin, est neque vestibulum dolor, nec tincidunt sapien nisi et ipsum. Nulla non vehicula ex, at rutrum ipsum. Nam accumsan, risus at maximus consectetur, libero lectus euismod diam, id rutrum justo ipsum nec mi. Ut tortor sem, faucibus sed orci ut, auctor accumsan urna. Pellentesque dictum suscipit erat at placerat. Etiam quis rhoncus augue. Pellentesque tincidunt diam in dignissim tristique."
+    mainContent.appendChild(par);    
+ 
+}
+
+let refreshRender = function(){
+    fetch(`${BASE_URL}/sessions`,{
+        method: 'GET'
+    }).then(response => response.json()).then(data => setUp(data)).catch(error => alert(error.message));
     
-    else {
-        current_user = User.getCurrentUser();
-        current_user.homePage();
-    }
+}
+ document.addEventListener('DOMContentLoaded', (e) => { 
+    refreshRender();
 });
