@@ -1,0 +1,2 @@
+class BrainsController < ApplicationController
+end
