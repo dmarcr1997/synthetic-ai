@@ -1,3 +1,5 @@
+let current_user;
+
 class User{
     constructor(username, email, id){
         this.username = username;
@@ -39,7 +41,7 @@ class User{
     createBrainButton(name){
         let button = document.createElement('button');
         button.innerHTML = `Create a ${name}`;
-        button.addEventListener('click', () => getResp(`${BASE_URL}/users/${this.id}/brains/new`));
+        button.addEventListener('click', () => Brain.renderBrainForm(name));
         mainContent.appendChild(button);
     }
 
@@ -49,8 +51,132 @@ class User{
             this.createBrainButton(types[i]);
         }
     }
+}
 
-    
+class Brain{
+    static renderBrainForm(option){
+        let thisUser = current_user;
+        console.log(thisUser.id);
+        mainContent.innerHTML = '';
+        let inputOne = document.createElement('input');
+        inputOne.placeholder = 'Name';
+        let inputTwo = document.createElement('input');
+        inputTwo.placeholder = 'Data';
+        let submit = document.createElement('button');
+        submit.innerText = 'Submit';
+        submit.addEventListener('click', () => Brain.send(`${BASE_URL}/users/${thisUser.id}/brains/new`, {name: inputOne.value, brain_data: inputTwo.value, brain_type: option}));
+        let attr = [inputOne, inputTwo, submit];
+        for(let i = 0; i< attr.length; i ++){
+            mainContent.appendChild(attr[i]);
+        }
+    }
+
+    static send(url, values){
+        fetch(`${url}`,{
+            method: `POST`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accepts': 'application/json'
+            },
+            body: JSON.stringify(values)
+        }).then(response => response.json()).then((data) =>{
+            Brain.renderBrainFromJson(data)
+
+        } ).catch((errors) => console.log(errors.messages));
+    }
+    static renderBrainFromJson(data){
+        mainContent.innerHTML = '';
+        let name = document.createElement('h1');
+        name.innerText = data['data']['attributes']['name'];
+        let type = document.createElement('h3');
+        type.innerText = data['data']['attributes']['brain_type'];
+        let brainData = document.createElement('p');
+        brainData.innerText = data['data']['attributes']['brain_data'];
+        let dataEditBox = document.createElement('textarea');
+        dataEditBox.innerText = data['data']['attributes']['brain_data'];
+        let dataEditSubmit = document.createElement('button');
+        dataEditSubmit.innerText = 'Update Data';
+        dataEditSubmit.addEventListener('click', () => Brain.updateBrain(data, dataEditBox.value));
+        let homePageButton = document.createElement('button');
+        homePageButton.innerText = 'Back to Landing Page'
+        homePageButton.addEventListener('click', () => refreshRender()); 
+        let attr = [name, type, brainData, dataEditBox, dataEditSubmit, homePageButton];
+        for(let i = 0; i< attr.length; i++){
+            mainContent.appendChild(attr[i]);
+        }
+    }
+
+    static updateBrain(data, value){
+        let brain_id = data['data']['id']
+        Brain.send(`${BASE_URL}/users/${current_user.id}/brains/${brain_id}/edit`, {brain_data: value});
+    }
+}
+
+class SuggestiveBrain extends Brain{
+    constructor(name, data){
+        this.name = name;
+        this.data = data;
+        this.type = "Suggester";
+        this.net = new brain.NeuralNetwork();
+    }
+
+    learn(){
+        this.net.train(this.data);
+        //add log to above code 
+    }
+
+    propertyLike(prop){
+        let value = Array.from(this.net.run(prop))[0];
+        if(value > 0.9) return "You Really Like this!";
+        else if(value > 0.5) return "You Kind of like this.";
+        else return "You Hate this!";
+    }
+    updateOrAddActivity(prop, likeVal = 1){
+        let change;
+        if (likeVal >= 1){
+            change = [1];
+        }
+        else change =[0];
+        this.data.push({
+            input: prop, output: change});
+        this.learn();
+        return `You changed ${Object.keys(prop)}'s value`;
+    }
+}
+
+class SentimentalBrain extends Brain{
+    constructor(name, data){
+        this.name = name;
+        this.data = data;
+        this.type = type;
+        this._net = new brain.recurrent.LSTM();
+        this._iterations = 100;
+        this._errorThresh = 0.011;
+    }
+
+    learn(){
+        this.net.train(this.data, {
+            iterations: this.iterations,
+            errorThresh: this.errorThresh
+        });
+    }
+
+    get iterations(){
+        return this._iterations
+    }
+    set iterations(iter){
+        this._iterations = iter;
+    }
+    get errorThresh(){
+        return this._errorThresh;
+    }
+    set errorThresh(err){
+        this._errorThresh = err;
+    }
+
+    sentenceMood(sentence){
+        return this.net.run(sentence);
+    }
 }
 
 const BASE_URL = "http://localhost:3000"
@@ -99,7 +225,6 @@ let sendInfo = function(url, values){
     }).then(response => response.json()).then((data) =>{
         newUserFromJson(data)
     } ).catch((errors) => console.log(errors.messages));
-
 }
 let getInfo = function(url, option){
     fetch(`${url}`,{
@@ -114,18 +239,16 @@ let getInfo = function(url, option){
     } ).catch((errors) => console.log(errors.messages));
 }
 let createMessageOrPage = function(data, option){
-    if (option === undefined){
-        
-    }
-    else if (option === 'logout')
+    if (option === 'logout')
     {
         alert(data['message']);
     }
 }
 let newUserFromJson = function(data){
-    console.log(data)
+    // console.log(data)
     mainContent.innerHTML = '';
-    current_user = new User(data['data']['attributes']['username']);
+    console.log(data)
+    current_user = new User(data['data']['attributes']['username'], data['data']['attributes']['email'], data['data']['id']);
  }
 
  let setUp = function(data){

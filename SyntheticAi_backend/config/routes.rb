@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   post 'users/new', to: 'users#create'
   resources :users, only: [ :show] do
-    resources :brains, only: [:show, :create, :index, :edit]
+    resources :brains, only: [:create, :index]
+    post 'brains/new', to: 'brains#create'
+    post 'brains/:id/edit', to: 'brains#edit'
   end
   resources :sessions, only: [:index, :create]
   get 'sessions/destroy', to: 'sessions#destroy'

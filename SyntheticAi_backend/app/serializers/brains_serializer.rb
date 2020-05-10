@@ -1,4 +1,4 @@
 class BrainsSerializer
   include FastJsonapi::ObjectSerializer
-  attributes 
+  attributes :name, :brain_data, :brain_type
 end
