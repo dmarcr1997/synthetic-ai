@@ -158,7 +158,30 @@ class Brain{
 
     }
     static setupSuggestiveBrain(name, data){
+        let sugBrain = new SuggestiveBrain(name, data);
         let learnButton = document.createElement('button');
+        learnButton.innerText = "LEARN";
+        learnButton.addEventListener('click', () => sugBrain.learn());
+        let propertyInput = document.createElement('input');
+        propertyInput.placeholder = 'Enter Property. Brain will tell you how much you like it.';
+        let propSubmit = document.createElement('button');
+        propSubmit.innerText = "Do I Like This?";
+        propSubmit.addEventListener('click', () => sugBrain.propertyLike(propertyInput.value));
+        let newPropertyPar = document.createElement('h3');
+        newPropertyPar = 'Create a new Property and give it a like value. Less than 50 if you dislike it and greater if you like it'
+        let newPropertyInput = document.createElement('input');
+        newPropertyInput.placeholder = 'Create a new property';
+        let newPropertyLike = document.createElement('p');
+        newPropertyLike.placeholder = 50;
+        let propLikeButton = document.createElement('button');
+        propLikeButton.innerText ='+';
+        propLikeButton.addEventListener('click', () => {if (newPropertyLike <=100)newPropertyLike.innerText++});
+        let propDisLikeButton = document.createElement('button');
+        propDisLikeButton.innerText ='-';
+        propLikeButton.addEventListener('click', () => {if (newPropertyLike >=0) newPropertyLike.innerText--});
+        let newPropSubmit = document.createElement('button');
+        newPropSubmit.innerText = "Create new Property";
+        newPropSubmit.addEventListener('click', () => sugBrain.updateOrAddActivity(newPropertyInput.value, newPropertyLike.innerText));
     }
 }
 
@@ -177,16 +200,16 @@ class SuggestiveBrain{
 
     propertyLike(prop){
         let value = Array.from(this.net.run(prop))[0];
-        if(value > 0.9) return "You Really Like this!";
-        else if(value > 0.5) return "You Kind of like this.";
-        else return "You Hate this!";
+        if(value > 0.9) return alert("You Really Like this!");
+        else if(value > 0.5) return alert("You Kind of like this.");
+        else return alert("You Hate this!");
     }
-    updateOrAddActivity(prop, likeVal = 1){
+    updateOrAddActivity(prop, likeVal = 50){
         let change;
-        if (likeVal >= 1){
+        if (likeVal >= 50){
             change = [1];
         }
-        else change =[0];
+        else change = [0];
         this.data.push({
             input: prop, output: change});
         this.learn();
