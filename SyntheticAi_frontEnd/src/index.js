@@ -65,8 +65,8 @@ class Brain{
         mainContent.innerHTML = '';
         let inputOne = document.createElement('input');
         inputOne.placeholder = 'Name';
-        let inputTwo = document.createElement('input');
-        inputTwo.placeholder = 'Data';
+        let inputTwo = document.createElement('textarea');
+        inputTwo.placeholder = 'if you are creating a suggestive brain list values as {input: prop, output: [0 or 1]},. With sentimental brains enter sentences as { input: I am super happy!, output: happy },';
         let submit = document.createElement('button');
         submit.innerText = 'Submit';
         submit.addEventListener('click', () => Brain.send(`${BASE_URL}/users/${thisUser.id}/brains/new`, {name: inputOne.value, brain_data: inputTwo.value, brain_type: option}));
@@ -105,8 +105,6 @@ class Brain{
         let dataEditSubmit = document.createElement('button');
         dataEditSubmit.innerText = 'Update Data';
         dataEditSubmit.addEventListener('click', () => Brain.updateBrain(data, dataEditBox.value));
-        if (brainType === 'Sentimental Brain') Brain.setupSentimentalBrain(brainName, brainData);
-        else if(brainType === 'Suggestive Brain') Brain.setupSuggestiveBrain(brainName, brainData);
         let homePageButton = document.createElement('button');
         homePageButton.innerText = 'Back to Landing Page'
         homePageButton.addEventListener('click', () => refreshRender()); 
@@ -114,6 +112,8 @@ class Brain{
         for(let i = 0; i< attr.length; i++){
             mainContent.appendChild(attr[i]);
         }
+        if (brainType === 'Sentimental Brain') Brain.setupSentimentalBrain(brainName, brainData);
+        else if(brainType === 'Suggestive Brain') Brain.setupSuggestiveBrain(brainName, brainData);
     }
 
     static updateBrain(data, value){
@@ -143,7 +143,6 @@ class Brain{
         let ul = document.createElement('ul');
         for(let i = 0; i < brains.length; i++){
             let name = brains[i]['attributes']['name'];
-            console.log(brains);
             let li = document.createElement('li');
             li.innerText = name;
             li.addEventListener('click', () => Brain.renderBrainFromJson(brains[i]));
@@ -158,6 +157,7 @@ class Brain{
 
     }
     static setupSuggestiveBrain(name, data){
+        console.log('in the sug brain');
         let sugBrain = new SuggestiveBrain(name, data);
         let learnButton = document.createElement('button');
         learnButton.innerText = "LEARN";
@@ -168,20 +168,33 @@ class Brain{
         propSubmit.innerText = "Do I Like This?";
         propSubmit.addEventListener('click', () => sugBrain.propertyLike(propertyInput.value));
         let newPropertyPar = document.createElement('h3');
-        newPropertyPar = 'Create a new Property and give it a like value. Less than 50 if you dislike it and greater if you like it'
+        newPropertyPar.innerText = 'Create a new Property and give it a like value. Less than 50 if you dislike it and greater if you like it'
         let newPropertyInput = document.createElement('input');
         newPropertyInput.placeholder = 'Create a new property';
         let newPropertyLike = document.createElement('p');
-        newPropertyLike.placeholder = 50;
+        newPropertyLike.innerText = '50';
         let propLikeButton = document.createElement('button');
         propLikeButton.innerText ='+';
-        propLikeButton.addEventListener('click', () => {if (newPropertyLike <=100)newPropertyLike.innerText++});
+        propLikeButton.addEventListener('click', () => {if (parseInt(newPropertyLike.innerText, 10) <= 100){ 
+            newPropertyLike.innerHTML = `${parseInt(newPropertyLike.innerHTML, 10) + 1}`;
+            console.log(newPropertyLike.innerHTML);
+            }
+        });
         let propDisLikeButton = document.createElement('button');
-        propDisLikeButton.innerText ='-';
-        propLikeButton.addEventListener('click', () => {if (newPropertyLike >=0) newPropertyLike.innerText--});
+        propDisLikeButton.innerText ='-'; 
+        propDisLikeButton.addEventListener('click', () => {if (parseInt(newPropertyLike.innerText, 10) >= 0) {
+            
+            newPropertyLike.innerHTML = `${parseInt(newPropertyLike.innerHTML, 10) -1}`;
+            console.log(newPropertyLike.innerHTML);
+            }
+        });
         let newPropSubmit = document.createElement('button');
         newPropSubmit.innerText = "Create new Property";
-        newPropSubmit.addEventListener('click', () => sugBrain.updateOrAddActivity(newPropertyInput.value, newPropertyLike.innerText));
+        newPropSubmit.addEventListener('click', () => sugBrain.updateOrAddActivity(newPropertyInput.value, parseInt(newPropertyLike.innerText, 10)));
+        let attrs =[learnButton, propertyInput, propSubmit, newPropertyPar, newPropertyInput, newPropertyLike, propLikeButton, propDisLikeButton, newPropSubmit];
+        for(let i = 0; i < attrs.length; i++){
+            mainContent.appendChild(attrs[i]);
+        }
     }
 }
 
@@ -213,7 +226,7 @@ class SuggestiveBrain{
         this.data.push({
             input: prop, output: change});
         this.learn();
-        return `You changed ${Object.keys(prop)}'s value`;
+        return alert(`You changed ${Object.keys(prop)}'s value`);
     }
 }
 
