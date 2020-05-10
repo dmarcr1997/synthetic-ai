@@ -41,8 +41,13 @@ class User{
     createBrainButton(name){
         let button = document.createElement('button');
         button.innerHTML = `Create a ${name}`;
+        let indexButton = document.createElement('button');
+        indexButton.innerHTML = `All ${name}s`;
         button.addEventListener('click', () => Brain.renderBrainForm(name));
+        indexButton.addEventListener('click', () => Brain.renderBrainIndex(`${BASE_URL}/users/${current_user.id}/brains`, {brain_type: name}));
         mainContent.appendChild(button);
+        mainContent.appendChild(indexButton);
+        
     }
 
     createBrainLinks(){
@@ -80,23 +85,28 @@ class Brain{
             },
             body: JSON.stringify(values)
         }).then(response => response.json()).then((data) =>{
-            Brain.renderBrainFromJson(data)
+            Brain.renderBrainFromJson(data['data'])
 
         } ).catch((errors) => console.log(errors.messages));
     }
     static renderBrainFromJson(data){
         mainContent.innerHTML = '';
+        let brainName = data['attributes']['name'];
+        let brainType = data['attributes']['brain_type'];
+        let currentData = data['attributes']['brain_data'];
         let name = document.createElement('h1');
-        name.innerText = data['data']['attributes']['name'];
+        name.innerText = brainName;
         let type = document.createElement('h3');
-        type.innerText = data['data']['attributes']['brain_type'];
+        type.innerText = brainType;
         let brainData = document.createElement('p');
-        brainData.innerText = data['data']['attributes']['brain_data'];
+        brainData.innerText = currentData;
         let dataEditBox = document.createElement('textarea');
-        dataEditBox.innerText = data['data']['attributes']['brain_data'];
+        dataEditBox.innerText = currentData;
         let dataEditSubmit = document.createElement('button');
         dataEditSubmit.innerText = 'Update Data';
         dataEditSubmit.addEventListener('click', () => Brain.updateBrain(data, dataEditBox.value));
+        if (brainType === 'Sentimental Brain') Brain.setupSentimentalBrain(brainName, brainData);
+        else if(brainType === 'Suggestive Brain') Brain.setupSuggestiveBrain(brainName, brainData);
         let homePageButton = document.createElement('button');
         homePageButton.innerText = 'Back to Landing Page'
         homePageButton.addEventListener('click', () => refreshRender()); 
@@ -110,9 +120,49 @@ class Brain{
         let brain_id = data['data']['id']
         Brain.send(`${BASE_URL}/users/${current_user.id}/brains/${brain_id}/edit`, {brain_data: value});
     }
+
+    static renderBrainIndex(url, values){
+        fetch(`${url}`,{
+            method: `POST`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accepts': 'application/json'
+            },
+            body: JSON.stringify(values)
+        }).then(response => response.json()).then((data) =>{
+            Brain.renderBrainsFromJson(data)
+
+        } ).catch((errors) => console.log(errors.messages));
+    }
+
+    static renderBrainsFromJson(data){
+        let brains = data['data'];
+        mainContent.innerHTML = '';
+        let h1 = document.createElement('h1');
+        h1.innerText = `${brains[0]['attributes']['brain_type']}`
+        let ul = document.createElement('ul');
+        for(let i = 0; i < brains.length; i++){
+            let name = brains[i]['attributes']['name'];
+            console.log(brains);
+            let li = document.createElement('li');
+            li.innerText = name;
+            li.addEventListener('click', () => Brain.renderBrainFromJson(brains[i]));
+            ul.appendChild(li);
+        }
+        mainContent.appendChild(h1);
+        mainContent.appendChild(ul);
+        
+    }
+
+    static setupSentimentalBrain(name, data){
+
+    }
+    static setupSuggestiveBrain(name, data){
+        let learnButton = document.createElement('button');
+    }
 }
 
-class SuggestiveBrain extends Brain{
+class SuggestiveBrain{
     constructor(name, data){
         this.name = name;
         this.data = data;
@@ -144,7 +194,7 @@ class SuggestiveBrain extends Brain{
     }
 }
 
-class SentimentalBrain extends Brain{
+class SentimentalBrain{
     constructor(name, data){
         this.name = name;
         this.data = data;

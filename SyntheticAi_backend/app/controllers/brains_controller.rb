@@ -22,6 +22,16 @@ class BrainsController < ApplicationController
         end
     end
 
+    def index
+        user = User.find_by(id: params[:user_id]);
+        brains = user.brains.where(brain_type: params[:brain_type]);
+        if !brains.empty?
+            render json: BrainsSerializer.new(brains)
+        else
+            render json: {message: "You have not made any brains in that category yet."}
+        end
+    end
+
     private
     def brain_params
         params.require(:brain).permit(:name, :brain_type, :brain_data, :id)

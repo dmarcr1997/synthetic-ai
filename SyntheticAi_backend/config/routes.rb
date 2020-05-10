@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   post 'users/new', to: 'users#create'
   resources :users, only: [ :show] do
-    resources :brains, only: [:create, :index]
+    post 'brains', to: 'brains#index'
     post 'brains/new', to: 'brains#create'
     post 'brains/:id/edit', to: 'brains#edit'
   end
