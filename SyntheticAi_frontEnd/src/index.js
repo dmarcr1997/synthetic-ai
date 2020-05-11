@@ -63,14 +63,20 @@ class Brain{
         let thisUser = current_user;
         console.log(thisUser.id);
         mainContent.innerHTML = '';
+        let nameLabel = document.createElement('label');
+        nameLabel.innerText = 'Name';
         let inputOne = document.createElement('input');
         inputOne.placeholder = 'Name';
+        let propertyLabel = document.createElement('label');
+        propertyLabel.innerText = 'Properties';
+        let propertyPar = document.createElement('p');
+        propertyPar.innerText = 'Suggestive brain list values as {"input": {"prop":1}, "output": [0 or 1]},. Enter Sentimental Brain sentences {"input": "I am super happy!", "output": "happy"}';
         let inputTwo = document.createElement('textarea');
-        inputTwo.placeholder = 'if you are creating a suggestive brain list values as {input: prop, output: [0 or 1]},. With sentimental brains enter sentences as { input: I am super happy!, output: happy },';
+        inputTwo.placeholder = 'Properties';
         let submit = document.createElement('button');
         submit.innerText = 'Submit';
         submit.addEventListener('click', () => Brain.send(`${BASE_URL}/users/${thisUser.id}/brains/new`, {name: inputOne.value, brain_data: inputTwo.value, brain_type: option}));
-        let attr = [inputOne, inputTwo, submit];
+        let attr = [nameLabel, inputOne, propertyLabel, inputTwo, propertyPar, submit];
         for(let i = 0; i< attr.length; i ++){
             mainContent.appendChild(attr[i]);
         }
@@ -94,21 +100,27 @@ class Brain{
         let brainName = data['attributes']['name'];
         let brainType = data['attributes']['brain_type'];
         let currentData = data['attributes']['brain_data']
+        let nameLabel = document.createElement('label');
+        nameLabel.innerText = 'NAME';
         let name = document.createElement('h1');
         name.innerText = brainName;
+        let typeLabel = document.createElement('label');
+        typeLabel.innerText = 'TYPE'; 
         let type = document.createElement('h3');
         type.innerText = brainType;
+        let dataLabel = document.createElement('label');
+        dataLabel.innerText = 'DATA'; 
         let brainData = document.createElement('p');
         brainData.innerText = currentData;
-        let dataEditBox = document.createElement('textarea');
-        dataEditBox.innerText = currentData;
+        // let dataEditBox = document.createElement('textarea');
+        // dataEditBox.innerText = currentData;
         // let dataEditSubmit = document.createElement('button');
         // dataEditSubmit.innerText = 'Update Data';
         // dataEditSubmit.addEventListener('click', () => Brain.updateBrain(data, dataEditBox.value));
         let homePageButton = document.createElement('button');
         homePageButton.innerText = 'Back to Landing Page'
         homePageButton.addEventListener('click', () => refreshRender()); 
-        let attr = [name, type, brainData, dataEditBox, homePageButton];
+        let attr = [nameLabel, name, typeLabel, type, dataLabel, brainData, homePageButton];
         for(let i = 0; i< attr.length; i++){
             mainContent.appendChild(attr[i]);
         }
@@ -194,13 +206,13 @@ class Brain{
             }
         });
         let likeNum;
-        if (parseInt(newPropertyLike.innerText,10) >= 50) likeNum = 1;
-        else if (parseInt(newPropertyLike.innerText,10) < 50) likeNum = 0;
-        
         let newPropSubmit = document.createElement('button');
         newPropSubmit.innerText = "Create new Property";
         newPropSubmit.addEventListener('click', () => {
-            Brain.updateBrain(data, `${brainData},\n{input: '${newPropertyInput.value}', output: [${likeNum}]}`);
+            if (parseInt(newPropertyLike.innerText, 10) >= 50) likeNum = 1;
+            else if (parseInt(newPropertyLike.innerText,10) < 50) likeNum = 0;
+        
+            Brain.updateBrain(data, `${brainData},\n{"input": {"${newPropertyInput.value}": 1}, "output": [${likeNum}]}`);
             sugBrain.updateOrAddActivity(newPropertyInput.value, parseInt(newPropertyLike.innerText, 10), data)
         });
         let attrs =[learnButton, propertyInput, propSubmit, newPropertyPar, newPropertyInput, newPropertyLike, propLikeButton, propDisLikeButton, newPropSubmit];
@@ -221,10 +233,12 @@ class SuggestiveBrain{
 
     learn(){
         let learningData = [];
-        let tmpData = this.data[0].split(",\n")
+        let tmpData = this.data[0].split(",\n");
+        console.log(tmpData);
         for(let i = 0; i < tmpData.length; i++){
-            learningData.push(tmpData[i]);
-            console.log('next thing');
+            let obj = JSON.parse(`${tmpData[i]}`);
+            console.log(obj);
+            learningData.push(obj);
         }
         console.log(learningData);
         this.net.train(learningData);
@@ -234,11 +248,11 @@ class SuggestiveBrain{
 
     propertyLike(prop){
         console.log(prop);
-        let value = Array.from(this.net.run(prop));
+        let value = Array.from(this.net.run(prop))[0];
         console.log(value);
-        // if(value > 0.9) return alert("You Really Like this!");
-        // else if(value > 0.5) return alert("You Kind of like this.");
-        // else return alert("You Hate this!");
+        if(value > 0.9) return alert("You Really Like this!");
+        else if(value > 0.5) return alert("You Kind of like this.");
+        else return alert("You Hate this!");
     }
     updateOrAddActivity(prop, likeVal = 50){
         let change;
@@ -247,7 +261,7 @@ class SuggestiveBrain{
         }
         else change = '[0]';
         this.data.push(`
-        { input: ${prop}, output: ${change}}`);
+        { "input": "${prop}", "output": ${change}}`);
         this.learn();
         return alert(`You changed ${prop}'s value`);
     }
