@@ -26,16 +26,22 @@ class User{
         home.innerHTML = 'Home';
         home.addEventListener('click', () => this.homePage);
         mainContent.appendChild(home);
+        let bre1 = document.createElement('br');
+        mainContent.appendChild(bre1);
         let logout = document.createElement('button');
         logout.innerHTML = 'Logout';
         logout.addEventListener('click', () => {    
             console.log(getInfo(`${BASE_URL}/sessions/destroy`, 'logout'));
         });
         mainContent.appendChild(logout);
+        let bre2 = document.createElement('br');
+        mainContent.appendChild(bre2);
         let about = document.createElement('button');
         about.addEventListener('click', () => renderAboutPage());
         about.innerHTML = 'About';
         mainContent.appendChild(about);
+        let bre3 = document.createElement('br');
+        mainContent.appendChild(bre3);
     }
 
     createBrainButton(name){
@@ -47,6 +53,8 @@ class User{
         indexButton.addEventListener('click', () => Brain.renderBrainIndex(`${BASE_URL}/users/${current_user.id}/brains`, {brain_type: name}));
         mainContent.appendChild(button);
         mainContent.appendChild(indexButton);
+        let bre = document.createElement('br');
+        mainContent.appendChild(bre);
         
     }
 
@@ -79,6 +87,8 @@ class Brain{
         let attr = [nameLabel, inputOne, propertyLabel, inputTwo, propertyPar, submit];
         for(let i = 0; i< attr.length; i ++){
             mainContent.appendChild(attr[i]);
+            let bre = document.createElement('br');
+            mainContent.appendChild(bre);
         }
     }
 
@@ -123,6 +133,8 @@ class Brain{
         let attr = [nameLabel, name, typeLabel, type, dataLabel, brainData, homePageButton];
         for(let i = 0; i< attr.length; i++){
             mainContent.appendChild(attr[i]);
+            let bre = document.createElement('br');
+            mainContent.appendChild(bre);
         }
         console.log(brainType);
         if (brainType === 'Sentimental Brain') Brain.setupSentimentalBrain(brainName, currentData, data);
@@ -185,7 +197,7 @@ class Brain{
         let sentSubmit = document.createElement('button');
         sentSubmit.innerText = "Submit";
         
-        sentSubmit.addEventListener('click', () => sentBrain.sentenceMood(`${sentenceInput.value}`));
+        sentSubmit.addEventListener('click', () => sentBrain.sentenceMood(sentenceInput.value));
 
         let newSentenceInput = document.createElement('input');
         newSentenceInput.placeholder = 'Create a new sentence';
@@ -195,7 +207,7 @@ class Brain{
         let newSentenceSubmit = document.createElement('button');
         newSentenceSubmit.innerText = "Create new Property";
         newSentenceSubmit.addEventListener('click', () => {
-            Brain.updateBrain(data, `${brainData},\n{"input": '${newSentenceInput.value}', "output": '${newSentenceMoodInput.value}'`);
+            Brain.updateBrain(data, `${brainData},\n{"input": "${newSentenceInput.value}", "output": "${newSentenceMoodInput.value}"`);
             sentBrain.addSentence(newSentenceInput.value, newSentenceMoodInput.value);
         });
 
@@ -349,6 +361,7 @@ class SentimentalBrain{
         this.data.push(`{"input": "${sentence}", "output": "${mood}"}`);
     }
     sentenceMood(sentence){
+        console.log(sentence);
         alert(this.net.run(sentence));
     }
 }
@@ -368,6 +381,8 @@ let renderHomePage = function(){
     
     for(let i = 0; i < buttons.length; i++){
         mainContent.appendChild(buttons[i]);
+        let bre = document.createElement('br');
+        mainContent.appendChild(bre);
     }
 }
 
@@ -449,6 +464,10 @@ let newUserFromJson = function(data){
     par.innerText = " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum placerat, orci nec malesuada feugiat, lorem ante ultricies dui, a elementum ante risus ultrices lectus. Nunc mattis a odio vel tempor. Proin libero nunc, condimentum ac mi at, sodales tincidunt ligula. Quisque sit amet vehicula nunc. Fusce porta pulvinar metus et eleifend. Fusce accumsan fermentum justo et egestas. Sed varius mi eget auctor sodales. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nullam ultricies elementum erat, a iaculis sapien commodo in. Nulla id volutpat massa. Suspendisse odio velit, gravida id mollis at, tincidunt ullamcorper odio. Aenean varius, lorem sit amet luctus sodales, lacus felis rhoncus tellus, nec commodo orci tellus non neque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In quam purus, vestibulum vitae fermentum eu, pulvinar non enim. Nam sapien orci, consequat vel ante ut, sodales eleifend magna. Curabitur gravida vel diam eget venenatis. Nulla facilisi. Etiam sagittis fringilla auctor. Ut a tincidunt eros. Aenean tincidunt lacus ut massa faucibus ultricies. In hac habitasse platea dictumst. Proin eu commodo mauris. Morbi blandit felis eleifend ligula pellentesque consectetur. Integer sagittis laoreet vulputate. Praesent congue egestas euismod. Etiam orci nisl, pulvinar id nisl at, congue molestie ipsum. Fusce ultrices metus massa, at pharetra nisl tempus eget. Morbi pulvinar felis elit, vel ornare lorem pretium id. Ut ac porta turpis. Nam tellus tortor, dictum eu est sed, vulputate molestie leo. Nam condimentum turpis ac massa luctus, sed laoreet dolor hendrerit. Vivamus elit ipsum, ornare malesuada dui at, convallis interdum dolor. Donec dapibus lorem hendrerit justo accumsan fringilla. Nullam pharetra vel dui sed molestie. Nam et scelerisque tellus. Fusce pulvinar ut odio at rutrum. Aenean quis turpis eu lorem rutrum fringilla at et sapien. Phasellus et molestie erat. Cras pretium mauris non gravida mattis. Integer lacinia diam eu pretium sollicitudin. Vivamus hendrerit eros eu accumsan ullamcorper. Maecenas id mauris nibh. Vivamus tristique consequat augue, placerat sodales dui facilisis vitae. Fusce neque nibh, ultrices ac ullamcorper nec, feugiat eu massa. Integer justo leo, tempor vitae commodo nec, lacinia blandit ex. Nulla ut faucibus lorem. Mauris semper et eros vel condimentum. Nulla at pretium turpis, nec finibus libero. Suspendisse eget tempor libero. Sed tincidunt orci tortor, quis lacinia erat dictum eu. Sed dignissim pellentesque turpis sit amet ullamcorper. Aenean venenatis leo vel elit sodales tincidunt. Cras neque massa, feugiat eu nibh eu, molestie semper arcu. Suspendisse ultrices nunc vel dictum vehicula. Suspendisse scelerisque nulla sed velit pellentesque efficitur. Maecenas placerat, eros quis pretium sollicitudin, est neque vestibulum dolor, nec tincidunt sapien nisi et ipsum. Nulla non vehicula ex, at rutrum ipsum. Nam accumsan, risus at maximus consectetur, libero lectus euismod diam, id rutrum justo ipsum nec mi. Ut tortor sem, faucibus sed orci ut, auctor accumsan urna. Pellentesque dictum suscipit erat at placerat. Etiam quis rhoncus augue. Pellentesque tincidunt diam in dignissim tristique."
     mainContent.appendChild(par);    
  
+}
+
+let appendToMain = function(array){
+
 }
 
 let refreshRender = function(){
