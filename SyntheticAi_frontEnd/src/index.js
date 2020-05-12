@@ -70,7 +70,7 @@ class Brain{
         let propertyLabel = document.createElement('label');
         propertyLabel.innerText = 'Properties';
         let propertyPar = document.createElement('p');
-        propertyPar.innerText = 'Suggestive brain list values as {"input": {"prop":1}, "output": [0 or 1]},. Enter Sentimental Brain sentences {"input": "I am super happy!", "output": "happy"}';
+        propertyPar.innerText = 'Suggestive brain list values as {"input": {"prop":1}, "output": [0 or 1]},. Enter Sentimental Brain sentences {"input": \'I am super happy!\', "output": \'happy\'}';
         let inputTwo = document.createElement('textarea');
         inputTwo.placeholder = 'Properties';
         let submit = document.createElement('button');
@@ -124,6 +124,7 @@ class Brain{
         for(let i = 0; i< attr.length; i++){
             mainContent.appendChild(attr[i]);
         }
+        console.log(brainType);
         if (brainType === 'Sentimental Brain') Brain.setupSentimentalBrain(brainName, currentData, data);
         else if(brainType === 'Suggestive Brain') Brain.setupSuggestiveBrain(brainName, currentData, data);
     }
@@ -144,7 +145,7 @@ class Brain{
         }).then(response => response.json()).then((data) =>{
             Brain.renderBrainsFromJson(data['data'])
 
-        } ).catch((errors) => console.log(errors.messages));
+        } ).catch((errors) => alert(errors.messages));
     }
 
     static renderBrainsFromJson(data){
@@ -169,8 +170,34 @@ class Brain{
         }    
     }
 
-    static setupSentimentalBrain(name, data){
+    static setupSentimentalBrain(name, brainData, data){
+        let sentBrain = new SentimentalBrain(name, brainData);
+        let learnButton = document.createElement('button');
+        learnButton.innerText = "LEARN";
+        learnButton.addEventListener('click', () => sentBrain.learn());
+        let sentenceInput = document.createElement('input');
+        sentenceInput.placeholder = 'Enter Sentence Brain will tell you the mood it think it portrays';
+        let sentSubmit = document.createElement('button');
+        sentSubmit.innerText = "Submit";
+        
+        sentSubmit.addEventListener('click', () => sentBrain.sentenceMood(`${sentenceInput.value}`));
 
+        let newSentenceInput = document.createElement('input');
+        newSentenceInput.placeholder = 'Create a new sentence';
+        let newSentenceMoodInput = document.createElement('input');
+        newSentenceInput.placeholder = 'Mood of this sentence';
+        
+        let newSentenceSubmit = document.createElement('button');
+        newSentenceSubmit.innerText = "Create new Property";
+        newSentenceSubmit.addEventListener('click', () => {
+            Brain.updateBrain(data, `${brainData},\n{"input": '${newSentenceInput.value}', "output": '${newSentenceMoodInput.value}'`);
+            sentBrain.addSentence(newSentenceInput.value, newSentenceMoodInput.value);
+        });
+
+        let attrs =[learnButton, sentenceInput, sentSubmit, newSentenceInput, newSentenceMoodInput,  newSentenceSubmit];
+        for(let i = 0; i < attrs.length; i++){
+            mainContent.appendChild(attrs[i]);
+        }
     }
     static setupSuggestiveBrain(name, brainData, data){
         // console.log('in the sug brain');
@@ -227,7 +254,6 @@ class SuggestiveBrain{
         this.name = name;
         this.data = [];
         this.data.push(initData)
-        this.type = "Suggester";
         this.net = new brain.NeuralNetwork();
     }
 
@@ -261,27 +287,37 @@ class SuggestiveBrain{
         }
         else change = '[0]';
         this.data.push(`
-        { "input": "${prop}", "output": ${change}}`);
+        { "input": "${prop}", "output": [${change}]}`);
         this.learn();
         return alert(`You changed ${prop}'s value`);
     }
 }
 
 class SentimentalBrain{
-    constructor(name, data){
+    constructor(name, initData){
         this.name = name;
-        this.data = data;
-        this.type = type;
-        this._net = new brain.recurrent.LSTM();
+        this.data = [];
+        this.data.push(initData);
+        this.net = new brain.recurrent.LSTM();
         this._iterations = 100;
-        this._errorThresh = 0.011;
+        this._errorThresh = 0.010;
     }
 
     learn(){
-        this.net.train(this.data, {
+        let learningData = [];
+        let tmpData = this.data[0].split(",\n");
+        console.log(tmpData);
+        for(let i = 0; i < tmpData.length; i++){
+            let obj = JSON.parse(`${tmpData[i]}`);
+            console.log(obj);
+            learningData.push(obj);
+        }
+        this.net.train(learningData, {
             iterations: this.iterations,
-            errorThresh: this.errorThresh
+            errorThresh: this.errorThresh, 
+            log: (error) => console.log(error)
         });
+        alert('Done Training');
     }
 
     get iterations(){
@@ -296,7 +332,9 @@ class SentimentalBrain{
     set errorThresh(err){
         this._errorThresh = err;
     }
-
+    addSentence(sentence, mood){
+        this.data.push(`{"input": "${sentence}", "output": "${mood}"}`);
+    }
     sentenceMood(sentence){
         return this.net.run(sentence);
     }
