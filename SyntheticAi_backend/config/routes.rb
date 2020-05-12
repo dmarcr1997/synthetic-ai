@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     post 'brains', to: 'brains#index'
     post 'brains/new', to: 'brains#create'
     post 'brains/:id/edit', to: 'brains#edit'
+    post 'brains/:id/delete', to: 'brains#destroy'
   end
   resources :sessions, only: [:index, :create]
   get 'sessions/destroy', to: 'sessions#destroy'

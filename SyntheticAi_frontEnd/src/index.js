@@ -143,14 +143,18 @@ class Brain{
             },
             body: JSON.stringify(values)
         }).then(response => response.json()).then((data) =>{
-            Brain.renderBrainsFromJson(data['data'])
+            Brain.renderBrainsFromJson(data['data'], data)
 
         } ).catch((errors) => alert(errors.messages));
     }
 
-    static renderBrainsFromJson(data){
+    static renderBrainsFromJson(data, errors){
         let brains = data;
-        if (brains !== undefined){
+        console.log(data);
+        if (errors['message']){
+            alert(errors['message']);
+        }
+        else{
             mainContent.innerHTML = '';
             let h1 = document.createElement('h1');
             h1.innerText = `${brains[0]['attributes']['brain_type']}`
@@ -160,13 +164,14 @@ class Brain{
                 let li = document.createElement('li');
                 li.innerText = name;
                 li.addEventListener('click', () => Brain.renderBrainFromJson(brains[i]));
+                let deleteButton = document.createElement('button');
+                deleteButton.innerText = 'x';
+                deleteButton.addEventListener('click', () => Brain.deleteBrain(brains[i]['id'], brains[0]['attributes']['brain_type']));
                 ul.appendChild(li);
+                ul.appendChild(deleteButton);
             }
             mainContent.appendChild(h1);
             mainContent.appendChild(ul);
-        }
-        else{
-            alert('Nothing Yet. Create Some!');
         }    
     }
 
@@ -246,6 +251,14 @@ class Brain{
         for(let i = 0; i < attrs.length; i++){
             mainContent.appendChild(attrs[i]);
         }
+    }
+    static deleteBrain(id, brainType){
+        fetch(`${BASE_URL}/users/${current_user.id}/brains/${id}/delete`, {
+            method: 'POST'}).then(response => response.json()).then(data => {
+            alert(data['message']);
+        }).catch(error => console.log(error));
+        mainContent.innerHTML = "";
+        refreshRender();
     }
 }
 
@@ -336,7 +349,7 @@ class SentimentalBrain{
         this.data.push(`{"input": "${sentence}", "output": "${mood}"}`);
     }
     sentenceMood(sentence){
-        return this.net.run(sentence);
+        alert(this.net.run(sentence));
     }
 }
 

@@ -28,8 +28,14 @@ class BrainsController < ApplicationController
         if !brains.empty?
             render json: BrainsSerializer.new(brains)
         else
-            render json: {message: "You have not made any brains in that category yet."}
+            render json: {message: 'No Brains in that category yet'}
         end
+    end
+
+    def destroy
+        brain = Brain.find(params[:id]);
+        Brain.delete(brain);
+        render json: {message: "Brain Successfully Deleted"};
     end
 
     private
