@@ -337,7 +337,7 @@ class SentimentalBrain{
                 learningData.push(obj);
             }
             catch(err){
-                alert('Add new lines between entries(hit enter)');
+                alert('Add comma and new lines between entries(, hit enter)');
             }
         }
         this.net.train(learningData, {
