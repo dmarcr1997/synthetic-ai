@@ -429,16 +429,21 @@ let createMessageOrPage = function(data, option){
     }
 }
 let newUserFromJson = function(data){
-    mainContent.innerHTML = '';
+    if (data['message']){
+        alert(data['message']);
+    }
+    else{
+        mainContent.innerHTML = '';
  
-    current_user = new User(data['data']['attributes']['username'], data['data']['attributes']['email'], data['data']['id']);
- }
+        current_user = new User(data['data']['attributes']['username'], data['data']['attributes']['email'], data['data']['id']);
+    }
+}
 
  let setUp = function(data){
-     if (data['noCurrentUser']) renderHomePage();
-     else{
+    if (data['noCurrentUser']) renderHomePage();
+    else{
         newUserFromJson(data);
-        }
+    }
  }
 
  let renderAboutPage = function(){
@@ -451,10 +456,18 @@ let newUserFromJson = function(data){
     loginPageButton.addEventListener('click', () => refreshRender()); 
 
    
-    let par = document.createElement('p')
-    par.innerText = " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum placerat, orci nec malesuada feugiat, lorem ante ultricies dui, a elementum ante risus ultrices lectus. Nunc mattis a odio vel tempor. Proin libero nunc, condimentum ac mi at, sodales tincidunt ligula. Quisque sit amet vehicula nunc. Fusce porta pulvinar metus et eleifend. Fusce accumsan fermentum justo et egestas. Sed varius mi eget auctor sodales. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nullam ultricies elementum erat, a iaculis sapien commodo in. Nulla id volutpat massa. Suspendisse odio velit, gravida id mollis at, tincidunt ullamcorper odio. Aenean varius, lorem sit amet luctus sodales, lacus felis rhoncus tellus, nec commodo orci tellus non neque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In quam purus, vestibulum vitae fermentum eu, pulvinar non enim. Nam sapien orci, consequat vel ante ut, sodales eleifend magna. Curabitur gravida vel diam eget venenatis. Nulla facilisi. Etiam sagittis fringilla auctor. Ut a tincidunt eros. Aenean tincidunt lacus ut massa faucibus ultricies. In hac habitasse platea dictumst. Proin eu commodo mauris. Morbi blandit felis eleifend ligula pellentesque consectetur. Integer sagittis laoreet vulputate. Praesent congue egestas euismod. Etiam orci nisl, pulvinar id nisl at, congue molestie ipsum. Fusce ultrices metus massa, at pharetra nisl tempus eget. Morbi pulvinar felis elit, vel ornare lorem pretium id. Ut ac porta turpis. Nam tellus tortor, dictum eu est sed, vulputate molestie leo. Nam condimentum turpis ac massa luctus, sed laoreet dolor hendrerit. Vivamus elit ipsum, ornare malesuada dui at, convallis interdum dolor. Donec dapibus lorem hendrerit justo accumsan fringilla. Nullam pharetra vel dui sed molestie. Nam et scelerisque tellus. Fusce pulvinar ut odio at rutrum. Aenean quis turpis eu lorem rutrum fringilla at et sapien. Phasellus et molestie erat. Cras pretium mauris non gravida mattis. Integer lacinia diam eu pretium sollicitudin. Vivamus hendrerit eros eu accumsan ullamcorper. Maecenas id mauris nibh. Vivamus tristique consequat augue, placerat sodales dui facilisis vitae. Fusce neque nibh, ultrices ac ullamcorper nec, feugiat eu massa. Integer justo leo, tempor vitae commodo nec, lacinia blandit ex. Nulla ut faucibus lorem. Mauris semper et eros vel condimentum. Nulla at pretium turpis, nec finibus libero. Suspendisse eget tempor libero. Sed tincidunt orci tortor, quis lacinia erat dictum eu. Sed dignissim pellentesque turpis sit amet ullamcorper. Aenean venenatis leo vel elit sodales tincidunt. Cras neque massa, feugiat eu nibh eu, molestie semper arcu. Suspendisse ultrices nunc vel dictum vehicula. Suspendisse scelerisque nulla sed velit pellentesque efficitur. Maecenas placerat, eros quis pretium sollicitudin, est neque vestibulum dolor, nec tincidunt sapien nisi et ipsum. Nulla non vehicula ex, at rutrum ipsum. Nam accumsan, risus at maximus consectetur, libero lectus euismod diam, id rutrum justo ipsum nec mi. Ut tortor sem, faucibus sed orci ut, auctor accumsan urna. Pellentesque dictum suscipit erat at placerat. Etiam quis rhoncus augue. Pellentesque tincidunt diam in dignissim tristique."
+    let par = document.createElement('p');
+    par.innerText = "Hello Welcome to Synthetic Ai. The purpose of this application is to allow users to create, test, and implement basic Ai's. All of the Ai's used in this application were made using Brain.js.";
+    let par2 = document.createElement('p');
+    par2.innerText = "To get started create a brain following the instructions on each brain's form page. Then run learn once redirected and anytime you add a new attribute.";
+    let par3 = document.createElement('p');
+    par3.innerText = "I have left some of the errors for the user to fix since many just depend on how your data is input, but where ever I could I tried to put in messages to help fix any errors you might create.";
+    let par4 = document.createElement('h1');
+    par4.innerText = "Enjoy and Welcome";
+
     appendToMain([box, loginPageButton, par])
- 
+    appendToMain([par2]);
+    appendToMain([par3, par4]);
 }
 
 let appendToMain = function(array){
