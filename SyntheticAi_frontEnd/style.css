@@ -1,12 +1,14 @@
 body {
     margin: 0;
     padding: 0;
+    background-color: #B7FB82;
   }
   
   header {
-    background-color: #4caf50;
+    background-color: #655A5A;
     margin: 0 auto;
     height: 50px;
+    color: #FFF8F8; 
   }
   
   header h2 {
@@ -21,7 +23,7 @@ body {
 
   main {
     display: grid;
-    grid-template-columns: .5fr;
+    grid-template-columns: .3fr;
     grid-template-rows: auto;
     grid-gap: 20px;
     padding-top: 10px;
@@ -36,6 +38,30 @@ body {
     border-radius: 10px;
   }
   
+  div.brain {
+    background-color: #655A5A;
+    width: 500px;
+    box-shadow: 10px 10px grey;
+    padding: 10px;
+    border-radius: 10px;
+    color: #FFF8F8; 
+  }
+  div.brain input{
+    width: 100%;
+  }
+  div.brain textarea{
+    width:100%;
+    resize: none;
+    outline: none;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 2%;
+  }
+
+  div.brain p{
+    color: #FFF8F8; 
+  }
+
   p {
     font-size: 1.5em;
     color: black;
@@ -57,8 +83,11 @@ body {
   textarea{
     border-radius: 10px;
     padding-top: 5%;
-    padding-bottom: 5%;
+    padding-bottom: 15%;
     width: 80%;
+    resize: none;
+    outline: none;
+    overflow: hidden;
   }
   
   

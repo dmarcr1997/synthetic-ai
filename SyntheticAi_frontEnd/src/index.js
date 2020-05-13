@@ -73,18 +73,23 @@ class Brain{
         inputOne.placeholder = 'Name';
         let propertyLabel = document.createElement('h3');
         propertyLabel.innerText = 'Properties';
-        let propertyPar = document.createElement('p');
-        propertyPar.innerText = 'Suggestive brain list values as {"input": {"prop":1}, "output": [0 or 1]},. Enter Sentimental Brain sentences {"input": "I am super happy!", "output": "happy"} with commas to separated entries';
+        let propertyPar;
+        if (option === 'Suggestive Brain'){
+            propertyPar = document.createElement('p');
+            propertyPar.innerText = 'Suggestive brain value example {"input": {"Food":1}, "output": [0(for dislike)  or 1(for like)]}';
+        }
+        else if(option === 'Sentimental Brain'){
+            propertyPar = document.createElement('p');
+            propertyPar.innerText = 'Sentimental Brain value example {"input": "I am super happy!", "output": "happy"}';
+        }        
+        
         let inputTwo = document.createElement('textarea');
         inputTwo.placeholder = 'Properties';
         let submit = document.createElement('button');
         submit.innerText = 'Submit';
         submit.addEventListener('click', () => Brain.send(`${BASE_URL}/users/${thisUser.id}/brains/new`, {name: inputOne.value, brain_data: inputTwo.value, brain_type: option}));
         let attr = [nameLabel, inputOne, propertyLabel, inputTwo, propertyPar, submit];
-        for(let i = 0; i< attr.length; i ++){
-            mainContent.appendChild(attr[i]);  
-        }
-        thisUser.createUserButtons();
+        appendToMain(attr);
     }
 
     static send(url, values){
@@ -105,34 +110,22 @@ class Brain{
         let brainName = data['attributes']['name'];
         let brainType = data['attributes']['brain_type'];
         let currentData = data['attributes']['brain_data']
-        // let nameLabel = document.createElement('label');
-        // nameLabel.innerText = 'NAME';
-        // let name = document.createElement('h1');
-        // name.innerText = brainName;
-        // let typeLabel = document.createElement('h3');
-        // typeLabel.innerText = 'TYPE'; 
-        // let type = document.createElement('h3');
-        // type.innerText = brainType;
+        
         let dataLabel = document.createElement('h3');
         dataLabel.innerText = 'DATA'; 
         let brainData = document.createElement('p');
         brainData.innerText = currentData;
-        // let dataEditBox = document.createElement('textarea');
-        // dataEditBox.innerText = currentData;
-        // let dataEditSubmit = document.createElement('button');
-        // dataEditSubmit.innerText = 'Update Data';
-        // dataEditSubmit.addEventListener('click', () => Brain.updateBrain(data, dataEditBox.value));
+        
+
         let homePageButton = document.createElement('button');
         homePageButton.innerText = 'Back to Landing Page'
         homePageButton.addEventListener('click', () => refreshRender()); 
-        let attr = [dataLabel, brainData, homePageButton];
-        for(let i = 0; i< attr.length; i++){
-            mainContent.appendChild(attr[i]);
-          
-        }
+        let attrs = [homePageButton, dataLabel, brainData];
         
+        appendToMain(attrs);
         if (brainType === 'Sentimental Brain') Brain.setupSentimentalBrain(brainName, currentData, data);
         else if(brainType === 'Suggestive Brain') Brain.setupSuggestiveBrain(brainName, currentData, data);
+        
     }
 
     static updateBrain(data, value){
@@ -156,14 +149,14 @@ class Brain{
 
     static renderBrainsFromJson(data, errors){
         let brains = data;
-        console.log(data);
+        
         if (errors['message']){
             alert(errors['message']);
         }
         else{
             mainContent.innerHTML = '';
             let h1 = document.createElement('h1');
-            h1.innerText = `${brains[0]['attributes']['brain_type']}`
+            h1.innerText = `${brains[0]['attributes']['brain_type']}s`
             let ul = document.createElement('ul');
             for(let i = 0; i < brains.length; i++){
                 let name = brains[i]['attributes']['name'];
@@ -176,8 +169,7 @@ class Brain{
                 ul.appendChild(li);
                 ul.appendChild(deleteButton);
             }
-            mainContent.appendChild(h1);
-            mainContent.appendChild(ul);
+            appendToMain([h1,ul]);
         }    
     }
 
@@ -192,26 +184,26 @@ class Brain{
         sentSubmit.innerText = "Submit";
         
         sentSubmit.addEventListener('click', () => sentBrain.sentenceMood(sentenceInput.value));
-
+        let newSentHead = document.createElement('h3');
+        newSentHead.innerText = "Add a New Sentence";
         let newSentenceInput = document.createElement('input');
         newSentenceInput.placeholder = 'Create a new sentence';
         let newSentenceMoodInput = document.createElement('input');
-        newSentenceInput.placeholder = 'Mood of this sentence';
+        newSentenceMoodInput.placeholder = 'Mood of this sentence';
         
         let newSentenceSubmit = document.createElement('button');
-        newSentenceSubmit.innerText = "Create new Property";
+        newSentenceSubmit.innerText = "Create new Sentence";
         newSentenceSubmit.addEventListener('click', () => {
             Brain.updateBrain(data, `${brainData},\n{"input": "${newSentenceInput.value}", "output": "${newSentenceMoodInput.value}"`);
             sentBrain.addSentence(newSentenceInput.value, newSentenceMoodInput.value);
         });
-
-        let attrs =[learnButton, sentenceInput, sentSubmit, newSentenceInput, newSentenceMoodInput,  newSentenceSubmit];
-        for(let i = 0; i < attrs.length; i++){
-            mainContent.appendChild(attrs[i]);
-        }
+        let editVals = Brain.editFields(brainData, data);
+        let attrs =[learnButton, sentenceInput, sentSubmit, newSentHead, newSentenceInput, newSentenceMoodInput,  newSentenceSubmit, ...editVals];
+        appendToBrainPage(attrs);
     }
+
     static setupSuggestiveBrain(name, brainData, data){
-        // console.log('in the sug brain');
+        
         let sugBrain = new SuggestiveBrain(name, brainData);
         let learnButton = document.createElement('button');
         learnButton.innerText = "LEARN";
@@ -232,7 +224,7 @@ class Brain{
         propLikeButton.innerText ='+';
         propLikeButton.addEventListener('click', () => {if (parseInt(newPropertyLike.innerText, 10) <= 100){ 
             newPropertyLike.innerHTML = `${parseInt(newPropertyLike.innerHTML, 10) + 1}`;
-            console.log(newPropertyLike.innerHTML);
+            
             }
         });
         let propDisLikeButton = document.createElement('button');
@@ -240,7 +232,7 @@ class Brain{
         propDisLikeButton.addEventListener('click', () => {if (parseInt(newPropertyLike.innerText, 10) >= 0) {
             
             newPropertyLike.innerHTML = `${parseInt(newPropertyLike.innerHTML, 10) -1}`;
-            console.log(newPropertyLike.innerHTML);
+            
             }
         });
         let likeNum;
@@ -253,8 +245,9 @@ class Brain{
             Brain.updateBrain(data, `${brainData},\n{"input": {"${newPropertyInput.value}": 1}, "output": [${likeNum}]}`);
             sugBrain.updateOrAddActivity(newPropertyInput.value, parseInt(newPropertyLike.innerText, 10), data)
         });
-        let attrs =[learnButton, propertyInput, propSubmit, newPropertyPar, newPropertyInput, newPropertyLike, propLikeButton, propDisLikeButton, newPropSubmit];
-        appendToMain(attrs);
+        let editVals = Brain.editFields(brainData, data);
+        let attrs =[learnButton, propertyInput, propSubmit, newPropertyPar, newPropertyInput, newPropertyLike, propLikeButton, propDisLikeButton, newPropSubmit, ...editVals];
+        appendToBrainPage(attrs);
     }
     static deleteBrain(id, brainType){
         fetch(`${BASE_URL}/users/${current_user.id}/brains/${id}/delete`, {
@@ -263,6 +256,17 @@ class Brain{
         }).catch(error => console.log(error));
         mainContent.innerHTML = "";
         refreshRender();
+    }
+
+    static editFields(currentData, data){
+        let dataEditHead = document.createElement('h3');
+        dataEditHead.innerText = 'Edit Your Properties';
+        let dataEditBox = document.createElement('textarea');
+        dataEditBox.innerText = currentData;
+        let dataEditSubmit = document.createElement('button');
+        dataEditSubmit.innerText = 'Update Data';
+        dataEditSubmit.addEventListener('click', () => Brain.updateBrain(data, dataEditBox.value));
+        return [dataEditHead, dataEditBox, dataEditSubmit];
     }
 }
 
@@ -456,6 +460,18 @@ let appendToMain = function(array){
         cardDiv.appendChild(array[i]);
     }
     mainContent.appendChild(cardDiv);
+}
+
+let appendToBrainPage = function(array){
+    
+    let brainDiv = document.createElement('div');
+    brainDiv.classList.add('brain');
+    for(let i = 0; i < array.length; i++){
+        console.log(array[i]);
+        brainDiv.appendChild(array[i]);
+
+    }
+    mainContent.appendChild(brainDiv);
 }
 
 let refreshRender = function(){
