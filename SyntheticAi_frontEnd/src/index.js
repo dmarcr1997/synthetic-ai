@@ -15,6 +15,7 @@ class User{
     }      
     
     homePage(){
+        mainContent.innerHTML ='';
         let heading = document.createElement('h1');
         heading.innerText = this.username;
         mainContent.appendChild(heading);
@@ -24,24 +25,21 @@ class User{
     createUserButtons(){
         let home = document.createElement('button');
         home.innerHTML = 'Home';
-        home.addEventListener('click', () => this.homePage);
+        home.addEventListener('click', () => this.homePage());
         mainContent.appendChild(home);
-        let bre1 = document.createElement('br');
-        mainContent.appendChild(bre1);
+       
         let logout = document.createElement('button');
         logout.innerHTML = 'Logout';
         logout.addEventListener('click', () => {    
             console.log(getInfo(`${BASE_URL}/sessions/destroy`, 'logout'));
         });
         mainContent.appendChild(logout);
-        let bre2 = document.createElement('br');
-        mainContent.appendChild(bre2);
+       
         let about = document.createElement('button');
         about.addEventListener('click', () => renderAboutPage());
         about.innerHTML = 'About';
         mainContent.appendChild(about);
-        let bre3 = document.createElement('br');
-        mainContent.appendChild(bre3);
+        
     }
 
     createBrainButton(name){
@@ -53,8 +51,7 @@ class User{
         indexButton.addEventListener('click', () => Brain.renderBrainIndex(`${BASE_URL}/users/${current_user.id}/brains`, {brain_type: name}));
         mainContent.appendChild(button);
         mainContent.appendChild(indexButton);
-        let bre = document.createElement('br');
-        mainContent.appendChild(bre);
+       
         
     }
 
@@ -69,16 +66,15 @@ class User{
 class Brain{
     static renderBrainForm(option){
         let thisUser = current_user;
-        console.log(thisUser.id);
         mainContent.innerHTML = '';
-        let nameLabel = document.createElement('label');
+        let nameLabel = document.createElement('h1');
         nameLabel.innerText = 'Name';
         let inputOne = document.createElement('input');
         inputOne.placeholder = 'Name';
-        let propertyLabel = document.createElement('label');
+        let propertyLabel = document.createElement('h3');
         propertyLabel.innerText = 'Properties';
         let propertyPar = document.createElement('p');
-        propertyPar.innerText = 'Suggestive brain list values as {"input": {"prop":1}, "output": [0 or 1]},. Enter Sentimental Brain sentences {"input": \'I am super happy!\', "output": \'happy\'}';
+        propertyPar.innerText = 'Suggestive brain list values as {"input": {"prop":1}, "output": [0 or 1]},. Enter Sentimental Brain sentences {"input": "I am super happy!", "output": "happy"} with commas to separated entries';
         let inputTwo = document.createElement('textarea');
         inputTwo.placeholder = 'Properties';
         let submit = document.createElement('button');
@@ -86,10 +82,9 @@ class Brain{
         submit.addEventListener('click', () => Brain.send(`${BASE_URL}/users/${thisUser.id}/brains/new`, {name: inputOne.value, brain_data: inputTwo.value, brain_type: option}));
         let attr = [nameLabel, inputOne, propertyLabel, inputTwo, propertyPar, submit];
         for(let i = 0; i< attr.length; i ++){
-            mainContent.appendChild(attr[i]);
-            let bre = document.createElement('br');
-            mainContent.appendChild(bre);
+            mainContent.appendChild(attr[i]);  
         }
+        thisUser.createUserButtons();
     }
 
     static send(url, values){
@@ -110,15 +105,15 @@ class Brain{
         let brainName = data['attributes']['name'];
         let brainType = data['attributes']['brain_type'];
         let currentData = data['attributes']['brain_data']
-        let nameLabel = document.createElement('label');
-        nameLabel.innerText = 'NAME';
-        let name = document.createElement('h1');
-        name.innerText = brainName;
-        let typeLabel = document.createElement('label');
-        typeLabel.innerText = 'TYPE'; 
-        let type = document.createElement('h3');
-        type.innerText = brainType;
-        let dataLabel = document.createElement('label');
+        // let nameLabel = document.createElement('label');
+        // nameLabel.innerText = 'NAME';
+        // let name = document.createElement('h1');
+        // name.innerText = brainName;
+        // let typeLabel = document.createElement('h3');
+        // typeLabel.innerText = 'TYPE'; 
+        // let type = document.createElement('h3');
+        // type.innerText = brainType;
+        let dataLabel = document.createElement('h3');
         dataLabel.innerText = 'DATA'; 
         let brainData = document.createElement('p');
         brainData.innerText = currentData;
@@ -130,11 +125,10 @@ class Brain{
         let homePageButton = document.createElement('button');
         homePageButton.innerText = 'Back to Landing Page'
         homePageButton.addEventListener('click', () => refreshRender()); 
-        let attr = [nameLabel, name, typeLabel, type, dataLabel, brainData, homePageButton];
+        let attr = [dataLabel, brainData, homePageButton];
         for(let i = 0; i< attr.length; i++){
             mainContent.appendChild(attr[i]);
-            let bre = document.createElement('br');
-            mainContent.appendChild(bre);
+          
         }
         console.log(brainType);
         if (brainType === 'Sentimental Brain') Brain.setupSentimentalBrain(brainName, currentData, data);
@@ -298,8 +292,10 @@ class SuggestiveBrain{
     }
 
     propertyLike(prop){
-        console.log(prop);
-        let value = Array.from(this.net.run(prop))[0];
+        let val = {}
+        val[`${prop}`] = 1;
+        console.log(val);
+        let value = Array.from(this.net.run(val))[0];
         console.log(value);
         if(value > 0.9) return alert("You Really Like this!");
         else if(value > 0.5) return alert("You Kind of like this.");
@@ -324,8 +320,8 @@ class SentimentalBrain{
         this.data = [];
         this.data.push(initData);
         this.net = new brain.recurrent.LSTM();
-        this._iterations = 100;
-        this._errorThresh = 0.010;
+        this._iterations = 500;
+        this._errorThresh = 0.001;
     }
 
     learn(){
@@ -381,8 +377,6 @@ let renderHomePage = function(){
     
     for(let i = 0; i < buttons.length; i++){
         mainContent.appendChild(buttons[i]);
-        let bre = document.createElement('br');
-        mainContent.appendChild(bre);
     }
 }
 
