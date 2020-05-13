@@ -130,7 +130,7 @@ class Brain{
             mainContent.appendChild(attr[i]);
           
         }
-        console.log(brainType);
+        
         if (brainType === 'Sentimental Brain') Brain.setupSentimentalBrain(brainName, currentData, data);
         else if(brainType === 'Suggestive Brain') Brain.setupSuggestiveBrain(brainName, currentData, data);
     }
