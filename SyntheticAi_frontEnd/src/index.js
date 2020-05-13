@@ -194,7 +194,7 @@ class Brain{
         let newSentenceSubmit = document.createElement('button');
         newSentenceSubmit.innerText = "Create new Sentence";
         newSentenceSubmit.addEventListener('click', () => {
-            Brain.updateBrain(data, `${brainData},\n{"input": "${newSentenceInput.value}", "output": "${newSentenceMoodInput.value}"`);
+            Brain.updateBrain(data, `${brainData},\n{"input": "${newSentenceInput.value}", "output": "${newSentenceMoodInput.value}"}`);
             sentBrain.addSentence(newSentenceInput.value, newSentenceMoodInput.value);
         });
         let editVals = Brain.editFields(brainData, data);
@@ -329,9 +329,16 @@ class SentimentalBrain{
     learn(){
         let learningData = [];
         let tmpData = this.data[0].split(",\n");
+        console.log(tmpData);
         for(let i = 0; i < tmpData.length; i++){
-            let obj = JSON.parse(`${tmpData[i]}`);
-            learningData.push(obj);
+            try{
+                let obj = JSON.parse(`${tmpData[i]}`);
+            
+                learningData.push(obj);
+            }
+            catch(err){
+                alert('Add new lines between entries(hit enter)');
+            }
         }
         this.net.train(learningData, {
             iterations: this.iterations,
