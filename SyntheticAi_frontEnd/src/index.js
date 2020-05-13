@@ -283,9 +283,18 @@ class SuggestiveBrain{
         let tmpData = this.data[0].split(",\n");
         
         for(let i = 0; i < tmpData.length; i++){
-            let obj = JSON.parse(`${tmpData[i]}`);
-            console.log(obj);
-            learningData.push(obj);
+            try{
+                let obj = JSON.parse(`${tmpData[i]}`);
+                console.log(obj);
+                learningData.push(obj);
+            }
+            catch(err){
+                alert(`${err}. 
+                You need to make sure your data looks like this 
+                {"input": {"prop": 1}, "output":[0]},
+                {"input": {"prop2": 1}, "output":[1]},
+                {"input": {"prop3": 1}, "output":[0]}`);
+            }
         }
         console.log(learningData);
         this.net.train(learningData);
@@ -299,9 +308,9 @@ class SuggestiveBrain{
         console.log(val);
         let value = Array.from(this.net.run(val))[0];
         console.log(value);
-        if(value > 0.9) return alert("You Really Like this!");
-        else if(value > 0.5) return alert("You Kind of like this.");
-        else return alert("You Hate this!");
+        if(value > 0.9) return alert(`You Really Like ${prop}`);
+        else if(value > 0.5) return alert(`You Kind of like ${prop}.`);
+        else return alert(`You Hate ${prop}!`);
     }
     updateOrAddActivity(prop, likeVal = 50){
         let change;
@@ -337,7 +346,8 @@ class SentimentalBrain{
                 learningData.push(obj);
             }
             catch(err){
-                alert('Add comma and new lines between entries(, hit enter)');
+                alert(`${err}.
+                Add comma and new lines between entries(, hit enter)`);
             }
         }
         this.net.train(learningData, {
@@ -365,9 +375,10 @@ class SentimentalBrain{
     }
     sentenceMood(sentence){
         console.log(sentence);
-        alert(this.net.run(sentence));
+        alert(`This sentence feels ${this.net.run(sentence)}.`);
     }
 }
+
 
 const BASE_URL = "http://localhost:3000"
 const mainContent = document.getElementsByClassName('user_location')[0];
