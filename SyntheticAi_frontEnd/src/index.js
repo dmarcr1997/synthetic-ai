@@ -254,9 +254,7 @@ class Brain{
             sugBrain.updateOrAddActivity(newPropertyInput.value, parseInt(newPropertyLike.innerText, 10), data)
         });
         let attrs =[learnButton, propertyInput, propSubmit, newPropertyPar, newPropertyInput, newPropertyLike, propLikeButton, propDisLikeButton, newPropSubmit];
-        for(let i = 0; i < attrs.length; i++){
-            mainContent.appendChild(attrs[i]);
-        }
+        appendToMain(attrs);
     }
     static deleteBrain(id, brainType){
         fetch(`${BASE_URL}/users/${current_user.id}/brains/${id}/delete`, {
@@ -367,17 +365,11 @@ const mainContent = document.getElementsByClassName('user_location')[0];
 
 let renderHomePage = function(){
     mainContent.innerHTML = '';
-    let box = document.createElement('div')
-    box.style.width = '100%';
-    box.style.height = '100%';
-    box.style.background = '#C4C4C4';
+    let box = document.createElement('h1')
     box.innerHTML = "Welcome to Synthetic Ai!!";
     mainContent.appendChild(box);
     let buttons = createHomeButtons();
-    
-    for(let i = 0; i < buttons.length; i++){
-        mainContent.appendChild(buttons[i]);
-    }
+    appendToMain(buttons);
 }
 
 let createHomeButtons = function(){
@@ -444,24 +436,26 @@ let newUserFromJson = function(data){
  let renderAboutPage = function(){
     mainContent.innerHTML = '';
     let box = document.createElement('div')
-    box.style.width = '100%';
-    box.style.height = '100%';
-    box.style.background = '#C4C4C4';
     box.innerHTML = "About";
-    mainContent.appendChild(box);
+    
     let loginPageButton = document.createElement('button');
     loginPageButton.innerText = 'Back to Landing Page'
     loginPageButton.addEventListener('click', () => refreshRender()); 
-    mainContent.appendChild(loginPageButton);
+
    
     let par = document.createElement('p')
     par.innerText = " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum placerat, orci nec malesuada feugiat, lorem ante ultricies dui, a elementum ante risus ultrices lectus. Nunc mattis a odio vel tempor. Proin libero nunc, condimentum ac mi at, sodales tincidunt ligula. Quisque sit amet vehicula nunc. Fusce porta pulvinar metus et eleifend. Fusce accumsan fermentum justo et egestas. Sed varius mi eget auctor sodales. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nullam ultricies elementum erat, a iaculis sapien commodo in. Nulla id volutpat massa. Suspendisse odio velit, gravida id mollis at, tincidunt ullamcorper odio. Aenean varius, lorem sit amet luctus sodales, lacus felis rhoncus tellus, nec commodo orci tellus non neque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In quam purus, vestibulum vitae fermentum eu, pulvinar non enim. Nam sapien orci, consequat vel ante ut, sodales eleifend magna. Curabitur gravida vel diam eget venenatis. Nulla facilisi. Etiam sagittis fringilla auctor. Ut a tincidunt eros. Aenean tincidunt lacus ut massa faucibus ultricies. In hac habitasse platea dictumst. Proin eu commodo mauris. Morbi blandit felis eleifend ligula pellentesque consectetur. Integer sagittis laoreet vulputate. Praesent congue egestas euismod. Etiam orci nisl, pulvinar id nisl at, congue molestie ipsum. Fusce ultrices metus massa, at pharetra nisl tempus eget. Morbi pulvinar felis elit, vel ornare lorem pretium id. Ut ac porta turpis. Nam tellus tortor, dictum eu est sed, vulputate molestie leo. Nam condimentum turpis ac massa luctus, sed laoreet dolor hendrerit. Vivamus elit ipsum, ornare malesuada dui at, convallis interdum dolor. Donec dapibus lorem hendrerit justo accumsan fringilla. Nullam pharetra vel dui sed molestie. Nam et scelerisque tellus. Fusce pulvinar ut odio at rutrum. Aenean quis turpis eu lorem rutrum fringilla at et sapien. Phasellus et molestie erat. Cras pretium mauris non gravida mattis. Integer lacinia diam eu pretium sollicitudin. Vivamus hendrerit eros eu accumsan ullamcorper. Maecenas id mauris nibh. Vivamus tristique consequat augue, placerat sodales dui facilisis vitae. Fusce neque nibh, ultrices ac ullamcorper nec, feugiat eu massa. Integer justo leo, tempor vitae commodo nec, lacinia blandit ex. Nulla ut faucibus lorem. Mauris semper et eros vel condimentum. Nulla at pretium turpis, nec finibus libero. Suspendisse eget tempor libero. Sed tincidunt orci tortor, quis lacinia erat dictum eu. Sed dignissim pellentesque turpis sit amet ullamcorper. Aenean venenatis leo vel elit sodales tincidunt. Cras neque massa, feugiat eu nibh eu, molestie semper arcu. Suspendisse ultrices nunc vel dictum vehicula. Suspendisse scelerisque nulla sed velit pellentesque efficitur. Maecenas placerat, eros quis pretium sollicitudin, est neque vestibulum dolor, nec tincidunt sapien nisi et ipsum. Nulla non vehicula ex, at rutrum ipsum. Nam accumsan, risus at maximus consectetur, libero lectus euismod diam, id rutrum justo ipsum nec mi. Ut tortor sem, faucibus sed orci ut, auctor accumsan urna. Pellentesque dictum suscipit erat at placerat. Etiam quis rhoncus augue. Pellentesque tincidunt diam in dignissim tristique."
-    mainContent.appendChild(par);    
+    appendToMain([box, loginPageButton, par])
  
 }
 
 let appendToMain = function(array){
-
+    let cardDiv = document.createElement('div');
+    cardDiv.classList.add('card');
+    for(let i = 0; i < array.length; i++){
+        cardDiv.appendChild(array[i]);
+    }
+    mainContent.appendChild(cardDiv);
 }
 
 let refreshRender = function(){
