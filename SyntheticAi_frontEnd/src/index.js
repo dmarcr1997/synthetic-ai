@@ -281,7 +281,7 @@ class SuggestiveBrain{
     learn(){
         let learningData = [];
         let tmpData = this.data[0].split(",\n");
-        console.log(tmpData);
+        
         for(let i = 0; i < tmpData.length; i++){
             let obj = JSON.parse(`${tmpData[i]}`);
             console.log(obj);
@@ -329,10 +329,8 @@ class SentimentalBrain{
     learn(){
         let learningData = [];
         let tmpData = this.data[0].split(",\n");
-        console.log(tmpData);
         for(let i = 0; i < tmpData.length; i++){
             let obj = JSON.parse(`${tmpData[i]}`);
-            console.log(obj);
             learningData.push(obj);
         }
         this.net.train(learningData, {
@@ -424,9 +422,8 @@ let createMessageOrPage = function(data, option){
     }
 }
 let newUserFromJson = function(data){
-    // console.log(data)
     mainContent.innerHTML = '';
-    console.log(data)
+ 
     current_user = new User(data['data']['attributes']['username'], data['data']['attributes']['email'], data['data']['id']);
  }
 
@@ -467,7 +464,7 @@ let appendToBrainPage = function(array){
     let brainDiv = document.createElement('div');
     brainDiv.classList.add('brain');
     for(let i = 0; i < array.length; i++){
-        console.log(array[i]);
+        
         brainDiv.appendChild(array[i]);
 
     }
