@@ -119,7 +119,7 @@ class Brain{
 
         let homePageButton = document.createElement('button');
         homePageButton.innerText = 'Back to Landing Page'
-        homePageButton.addEventListener('click', () => refreshRender()); 
+        homePageButton.addEventListener('click', () => current_user.homePage()); 
         let attrs = [homePageButton, dataLabel, brainData];
         
         appendToMain(attrs);
@@ -476,6 +476,7 @@ let newUserFromJson = function(data){
 }
 
  let setUp = function(data){
+    console.log(data);
     if (data['noCurrentUser']) renderHomePage();
     else{
         newUserFromJson(data);
