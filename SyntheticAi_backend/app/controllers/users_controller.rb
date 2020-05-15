@@ -4,7 +4,7 @@ class UsersController < ApplicationController
     def create
         user = User.create(user_params, auth_token: unique_auth_token)
         if user.save
-            session[:user_id] = user.id
+            SessionsController.getSess[:user_id] = user.id
             render json: UsersSerializer.new(user)
         else
             render json: {message: 'Username already taken'}
