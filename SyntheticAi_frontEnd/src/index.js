@@ -125,7 +125,7 @@ class Brain{
         appendToMain(attrs);
         if (brainType === 'Sentimental Brain') Brain.setupSentimentalBrain(brainName, currentData, data);
         else if(brainType === 'Suggestive Brain') Brain.setupSuggestiveBrain(brainName, currentData, data);
-        
+        alert('Run learn to begin');
     }
 
     static updateBrain(data, value){
@@ -191,6 +191,26 @@ class Brain{
         let newSentenceMoodInput = document.createElement('input');
         newSentenceMoodInput.placeholder = 'Mood of this sentence';
         
+        let learnAttrHead = document.createElement('h3');
+        learnAttrHead.innerText = 'Change Learing iterations and error threshold for Brain';
+        let iterHead = document.createElement('h4');
+        iterHead.innerText = 'Iterations';
+        let iterInput = document.createElement('input');
+        iterInput.value = sentBrain.iterations;
+        let errHead = document.createElement('h4');
+        errHead.innerText = 'Error Threshold';
+        let errorThreshInput = document.createElement('input');
+        errorThreshInput.value = sentBrain.errorThresh;
+
+        let learnAttrsubmit = document.createElement('button');
+        learnAttrsubmit.innerText = "Update";
+        learnAttrsubmit.addEventListener('click', () => {
+            sentBrain.iterations = iterInput.value;
+            sentBrain.errorThresh = errorThreshInput.value;
+            console.log(sentBrain);
+        });
+        
+
         let newSentenceSubmit = document.createElement('button');
         newSentenceSubmit.innerText = "Create new Sentence";
         newSentenceSubmit.addEventListener('click', () => {
@@ -198,7 +218,7 @@ class Brain{
             sentBrain.addSentence(newSentenceInput.value, newSentenceMoodInput.value);
         });
         let editVals = Brain.editFields(brainData, data);
-        let attrs =[learnButton, sentenceInput, sentSubmit, newSentHead, newSentenceInput, newSentenceMoodInput,  newSentenceSubmit, ...editVals];
+        let attrs =[learnButton, sentenceInput, sentSubmit, newSentHead, newSentenceInput, newSentenceMoodInput,  newSentenceSubmit, learnAttrHead, iterHead, iterInput, errHead, errorThreshInput, learnAttrsubmit, ...editVals];
         appendToBrainPage(attrs);
     }
 
@@ -331,8 +351,8 @@ class SentimentalBrain{
         this.data = [];
         this.data.push(initData);
         this.net = new brain.recurrent.LSTM();
-        this._iterations = 500;
-        this._errorThresh = 0.001;
+        this._iterations = 1000;
+        this._errorThresh = 0.011;
     }
 
     learn(){
@@ -374,8 +394,13 @@ class SentimentalBrain{
         this.data.push(`{"input": "${sentence}", "output": "${mood}"}`);
     }
     sentenceMood(sentence){
-        console.log(sentence);
-        alert(`This sentence feels ${this.net.run(sentence)}.`);
+        try{
+            console.log(sentence);
+            alert(`This sentence feels ${this.net.run(sentence)}.`);
+        }
+        catch(err){
+            alert(err);
+        }
     }
 }
 
