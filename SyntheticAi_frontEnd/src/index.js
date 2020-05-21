@@ -298,7 +298,7 @@ class SuggestiveBrain{
         this.net = new brain.NeuralNetwork();
     }
 
-    learn(){
+    async learn(){
         let learningData = [];
         let tmpData = this.data[0].split(",\n");
         
@@ -355,7 +355,7 @@ class SentimentalBrain{
         this._errorThresh = 0.011;
     }
 
-    learn(){
+    async learn(){
         let learningData = [];
         let tmpData = this.data[0].split(",\n");
         console.log(tmpData);
