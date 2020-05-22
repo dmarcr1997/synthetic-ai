@@ -30,7 +30,8 @@ class User{
        
         let logout = document.createElement('button');
         logout.innerHTML = 'Logout';
-        logout.addEventListener('click', () => {    
+        logout.addEventListener('click', () => {   
+            current_user = undefined 
             console.log(getInfo(`${BASE_URL}/sessions/destroy`, 'logout'));
         });
         mainContent.appendChild(logout);
@@ -490,7 +491,13 @@ let newUserFromJson = function(data){
     
     let loginPageButton = document.createElement('button');
     loginPageButton.innerText = 'Back to Landing Page'
-    loginPageButton.addEventListener('click', () => refreshRender()); 
+    loginPageButton.addEventListener('click', () => {
+        if (current_user !== undefined){
+            current_user.homePage()}
+        else{
+            refreshRender()
+        }
+    }); 
 
    
     let par = document.createElement('p');
